@@ -13,7 +13,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-full">
       <ThreadView />
     </div>
   )

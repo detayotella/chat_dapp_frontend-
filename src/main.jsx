@@ -36,19 +36,19 @@ const router = createBrowserRouter([
         path: '/register/fire-domain',
         element: <FireDomainRegistration />,
       },
+    ],
+  },
+  {
+    path: '/chat',
+    element: (
+      <ProtectedRoute>
+        <ChatLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: '/chat',
-        element: (
-          <ProtectedRoute>
-            <ChatLayout />
-          </ProtectedRoute>
-        ),
-        children: [
-          {
-            path: ':userId?',
-            element: <ChatPage />,
-          },
-        ],
+        path: ':userId?',
+        element: <ChatPage />,
       },
     ],
   },

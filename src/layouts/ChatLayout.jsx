@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, Link } from 'react-router-dom'
 import ContactList from '../components/chat/ContactList'
 import UserSearch from '../components/chat/UserSearch'
@@ -6,11 +6,22 @@ import { WalletButton } from '../components/WalletButton'
 
 export default function ChatLayout() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(true)
   const navigate = useNavigate()
+
+  // Hide welcome message after 4 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcome(false)
+    }, 4000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleStartChat = (address) => {
     navigate(`/chat/${address}`)
     setIsSearchOpen(false)
+    setShowWelcome(false) // Hide welcome when starting a chat
   }
 
   return (
@@ -43,6 +54,19 @@ export default function ChatLayout() {
           </div>
         </div>
       </header>
+
+      {/* Temporary Welcome Notification */}
+      {showWelcome && (
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-3 text-center text-sm transition-all duration-500 ease-in-out">
+          🎉 Welcome back to Fire Chat! Start a conversation by finding users or selecting from your contacts.
+          <button 
+            onClick={() => setShowWelcome(false)}
+            className="ml-3 text-white hover:text-gray-200 font-bold text-lg leading-none"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar for user list */}

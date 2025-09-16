@@ -74,13 +74,14 @@ export default function ThreadView() {
 
   if (!userId) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-            Welcome to the Chat!
+          <div className="text-6xl mb-4">💬</div>
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+            No conversation selected
           </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Select a conversation from the sidebar or start a new chat
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Choose a contact from the sidebar to start chatting
           </p>
         </div>
       </div>
