@@ -1,0 +1,1 @@
+// This file is now deprecated. Please use Wagmi/RainbowKit hooks and providers for wallet access.
