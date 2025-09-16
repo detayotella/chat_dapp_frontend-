@@ -21,15 +21,6 @@ export default function MainLayout() {
                     🔥 Fire Chat
                   </h1>
                 </Link>
-                
-                {!isHomePage && (
-                  <Link 
-                    to="/" 
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex items-center"
-                  >
-                    ← Back to Home
-                  </Link>
-                )}
               </div>
               
               <div className="flex items-center space-x-4">

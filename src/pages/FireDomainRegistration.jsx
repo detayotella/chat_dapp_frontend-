@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useWalletClient, usePublicClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useNavigate } from 'react-router-dom'
 import { formatEther } from 'viem'
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import FireDomainService from '../lib/fireDomains'
 import FireDomainABI from '../contracts/abi/FireDomainRegistry.json'
+import { useUserRegistration } from '../contexts/UserRegistrationContext'
 
-const FIRE_DOMAIN_CONTRACT_ADDRESS = import.meta.env.VITE_FIRE_DOMAIN_CONTRACT_ADDRESS || '0x...'
+const FIRE_DOMAIN_CONTRACT_ADDRESS = import.meta.env.VITE_FIRE_DOMAIN_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000'
 
 export default function FireDomainRegistration() {
   const { address, isConnected } = useAccount()
   const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient()
   const { openConnectModal } = useConnectModal()
+  const navigate = useNavigate()
+  const { markAsRegistered } = useUserRegistration()
 
   // Form state
   const [domainName, setDomainName] = useState('')
@@ -151,6 +156,14 @@ export default function FireDomainRegistration() {
       setUseDefaultImage(true)
       setIsAvailable(null)
 
+      // Mark user as registered in the context
+      markAsRegistered(result)
+
+      // Auto-redirect to chat page after 3 seconds
+      setTimeout(() => {
+        navigate('/chat')
+      }, 3000)
+
     } catch (error) {
       console.error('Registration error:', error)
       setError(error.message || 'Failed to register domain')
@@ -170,6 +183,17 @@ export default function FireDomainRegistration() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
+          {/* Back Button */}
+          <div className="mb-6">
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:text-gray-700 transition-colors duration-200 shadow-sm"
+            >
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              Back to Home
+            </button>
+          </div>
+          
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -195,23 +219,31 @@ export default function FireDomainRegistration() {
                 <p><strong>Domain:</strong> {success.fullDomain}</p>
                 <p><strong>Token ID:</strong> {success.tokenId}</p>
                 <p><strong>Expires:</strong> {new Date(success.expiresAt).toLocaleDateString()}</p>
-                <div className="mt-4 flex space-x-4">
-                  <a
-                    href={success.metadataUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-600 hover:text-green-800 underline"
+                <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => navigate('/chat')}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200"
                   >
-                    View Metadata
-                  </a>
-                  <a
-                    href={success.imageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-600 hover:text-green-800 underline"
-                  >
-                    View Image
-                  </a>
+                    🚀 Start Chatting Now
+                  </button>
+                  <div className="flex space-x-4">
+                    <a
+                      href={success.metadataUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-800 underline"
+                    >
+                      View Metadata
+                    </a>
+                    <a
+                      href={success.imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-800 underline"
+                    >
+                      View Image
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -399,7 +431,7 @@ export default function FireDomainRegistration() {
             </h2>
             <div className="space-y-3 text-gray-600">
               <p>
-                <strong>🔥 Unique Identity:</strong> Your .fire domain serves as your unique 
+                <strong>Unique Identity:</strong> Your .fire domain serves as your unique 
                 blockchain identity across the decentralized web.
               </p>
               <p>

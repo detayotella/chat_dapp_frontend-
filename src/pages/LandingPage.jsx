@@ -6,7 +6,8 @@ export default function LandingPage() {
   const { isConnected } = useAccount()
 
   return (
-    <div className="relative isolate">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div className="relative isolate min-h-screen">
       {/* Background with gradient */}
       <div
         className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -64,8 +65,9 @@ export default function LandingPage() {
       </div>
 
       {/* Features section */}
-      <div id="features" className="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-        <div className="mx-auto max-w-2xl lg:text-center">
+      <div id="features" className="bg-white dark:bg-gray-900 py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-indigo-600 dark:text-indigo-400">
             Secure Communication
           </h2>
@@ -108,23 +110,22 @@ export default function LandingPage() {
                 </p>
               </dd>
             </div>
-          </dl>
+            </dl>
+          </div>
         </div>
       </div>
 
-      {/* Background gradient bottom */}
-      <div
-        className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
-        aria-hidden="true"
-      >
-        <div
-          className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#80caff] to-[#4f46e5] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
+      {/* Footer section to ensure full coverage */}
+      <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-12">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Built with ❤️ for the decentralized web
+            </p>
+          </div>
+        </div>
       </div>
+    </div>
     </div>
   )
 }
