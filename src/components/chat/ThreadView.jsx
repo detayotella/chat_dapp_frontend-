@@ -65,26 +65,41 @@ export default function ThreadView() {
     if (!newMessage.trim()) return
 
     try {
+      // Create message object for immediate display
+      const newMsg = {
+        id: Date.now().toString(), // Add unique ID for MessageList
+        content: newMessage.trim(),
+        senderAddress: client?.address || 'unknown',
+        sent: new Date(),
+        timestamp: new Date(),
+        sender: client?.address || 'unknown'
+      }
+
+      // Add message to display immediately for better UX
+      setMessages(prev => [...prev, newMsg])
+
       if (conversation) {
-        // Real conversation
+        // Real conversation - send via XMTP
         await conversation.send(newMessage)
+        console.log('📤 Message sent via XMTP:', newMessage)
       } else if (userId && client) {
-        // Create new conversation
+        // Create new conversation and send
+        console.log('📤 Creating new conversation with:', userId)
         const newConvo = await client.conversations.newConversation(userId)
         await newConvo.send(newMessage)
-        
-        // Add to local messages for immediate feedback
-        const newMsg = {
-          content: newMessage,
-          senderAddress: client.address,
-          sent: new Date()
-        }
-        setMessages(prev => [...prev, newMsg])
+        console.log('📤 Message sent to new conversation:', newMessage)
+      } else {
+        // Mock mode - just log
+        console.log('📤 Mock message sent:', newMessage, 'to:', userId)
       }
       
       setNewMessage('')
     } catch (err) {
       console.error('Error sending message:', err)
+      
+      // Remove the message we optimistically added if sending failed
+      setMessages(prev => prev.slice(0, -1))
+      
       alert('Failed to send message: ' + err.message)
     }
   }
@@ -162,12 +177,15 @@ export default function ThreadView() {
         <div className="flex items-center">
           <div className="flex-shrink-0">
             <div className="h-10 w-10 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex items-center justify-center text-white">
-              {conversation.peerAddress.slice(2, 4)}
+              {conversation?.peerAddress?.slice(2, 4) || userId?.slice(2, 4)}
             </div>
           </div>
           <div className="ml-4">
             <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-              {conversation.peerAddress.slice(0, 6)}...{conversation.peerAddress.slice(-4)}
+              {conversation?.peerAddress ? 
+                `${conversation.peerAddress.slice(0, 6)}...${conversation.peerAddress.slice(-4)}` :
+                `${userId?.slice(0, 6)}...${userId?.slice(-4)}`
+              }
             </h2>
             {isTyping && (
               <p className="text-sm text-gray-500 dark:text-gray-400">typing...</p>
