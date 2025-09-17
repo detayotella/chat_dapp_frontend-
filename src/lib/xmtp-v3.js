@@ -6,14 +6,25 @@ export const initializeXMTP = async (signer) => {
   try {
     if (!signer) throw new Error('No signer provided')
     
-    // Create a client with the wallet signer
+    console.log('🔄 Attempting to create XMTP client...')
+    
+    // Create a client with the wallet signer - use dev environment for now
     xmtpClient = await Client.create(signer, { 
-      env: 'production'
+      env: 'dev', // Use dev environment to avoid V2 deprecation issues
+      skipContactPublishing: true, // Skip contact publishing for faster initialization
+      persistConversations: false // Don't persist conversations for now
     })
     
+    console.log('✅ XMTP client created successfully')
     return xmtpClient
   } catch (error) {
-    console.error('Error initializing XMTP client:', error)
+    console.error('❌ Error initializing XMTP client:', error)
+    
+    // If it's the V2 deprecation error, provide helpful message
+    if (error.message.includes('XMTP V2 is no longer available')) {
+      console.log('💡 XMTP V2 is deprecated. Consider upgrading to XMTP V3 SDK.')
+    }
+    
     throw error
   }
 }

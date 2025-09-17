@@ -10,49 +10,82 @@ export default function ThreadView() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const conversation = conversations.find(c => c.peerAddress === userId)
+  const conversation = conversations.find(c => c.peerAddress === userId) || null
   const typingTimeoutRef = useRef(null)
 
   // Load messages when conversation changes
   useEffect(() => {
-    if (!conversation) return
+    if (!userId || !client) return
     
     let mounted = true
     const loadMessages = async () => {
       try {
-        const msgs = await conversation.messages()
-        if (mounted) {
-          setMessages(msgs)
+        if (conversation) {
+          // Real conversation
+          const msgs = await conversation.messages()
+          if (mounted) {
+            setMessages(msgs)
+          }
+
+          // Set up message streaming
+          const stream = conversation.streamMessages()
+          stream.on('message', (message) => {
+            if (mounted) {
+              setMessages(prev => [...prev, message])
+            }
+          })
+
+          return () => {
+            stream.close()
+          }
+        } else {
+          // Mock conversation - start with empty messages
+          if (mounted) {
+            setMessages([])
+          }
         }
       } catch (err) {
         console.error('Error loading messages:', err)
+        if (mounted) {
+          setMessages([])
+        }
       }
     }
 
     loadMessages()
 
-    // Listen for new messages
-    const unsubscribe = conversation.onMessage((message) => {
-      setMessages(prev => [...prev, message])
-    })
-
     return () => {
       mounted = false
-      unsubscribe()
     }
-  }, [conversation])
+  }, [conversation, userId, client])
 
   // Handle sending messages
   const sendMessage = async (e) => {
     e.preventDefault()
-    if (!newMessage.trim() || !conversation) return
+    if (!newMessage.trim()) return
 
     try {
-      await conversation.send(newMessage)
+      if (conversation) {
+        // Real conversation
+        await conversation.send(newMessage)
+      } else if (userId && client) {
+        // Create new conversation
+        const newConvo = await client.conversations.newConversation(userId)
+        await newConvo.send(newMessage)
+        
+        // Add to local messages for immediate feedback
+        const newMsg = {
+          content: newMessage,
+          senderAddress: client.address,
+          sent: new Date()
+        }
+        setMessages(prev => [...prev, newMsg])
+      }
+      
       setNewMessage('')
     } catch (err) {
       console.error('Error sending message:', err)
-      alert('Failed to send message')
+      alert('Failed to send message: ' + err.message)
     }
   }
 
@@ -88,11 +121,35 @@ export default function ThreadView() {
     )
   }
 
-  if (!conversation) {
+  if (!conversation && userId && client) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">
-          Conversation not found
+      <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="text-6xl mb-4">💬</div>
+          <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+            Start a new conversation
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            This will be your first message to {userId.slice(0, 6)}...{userId.slice(-4)}
+          </p>
+          <form onSubmit={sendMessage} className="max-w-md mx-auto">
+            <div className="flex items-center gap-4">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your first message..."
+                className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+              <button
+                type="submit"
+                disabled={!newMessage.trim()}
+                className="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-400 text-white"
+              >
+                <PaperAirplaneIcon className="h-5 w-5" />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     )

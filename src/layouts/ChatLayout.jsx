@@ -69,8 +69,8 @@ export default function ChatLayout() {
       )}
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar for user list */}
-        <div className="hidden md:flex md:w-80 md:flex-col">
+        {/* Sidebar for user list - now visible on all screen sizes */}
+        <div className="flex w-full md:w-80 md:flex-col">
           <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800">
             {isSearchOpen ? (
               <UserSearch onStartChat={handleStartChat} />
@@ -80,7 +80,7 @@ export default function ChatLayout() {
           </div>
         </div>
 
-        {/* Main content area */}
+        {/* Main content area - only visible when a chat is selected on mobile */}
         <div className="flex flex-1 flex-col">
           <main className="flex-1 overflow-hidden">
             <Outlet />
