@@ -29,28 +29,40 @@ export function XMTPProvider({ children }) {
         isConnected: true,
         conversations: {
           list: async () => [],
-          newConversation: async (peerAddress) => ({
-            peerAddress,
-            messages: async () => [],
-            send: async (message) => {
-              console.log('📤 Mock message sent:', message, 'to:', peerAddress)
-              return { content: message, senderAddress: address, sent: new Date() }
-            },
-            streamMessages: () => ({
-              on: () => {},
-              close: () => {}
-            })
-          }),
-          stream: () => ({
-            on: (event, callback) => {
-              console.log('📡 Mock conversation stream listening for:', event)
-            },
-            close: () => {
-              console.log('📡 Mock conversation stream closed')
+          newConversation: async (peerAddress) => {
+            try {
+              console.log('📤 Mock message sent:', 'creating conversation with', 'to:', peerAddress)
+              return {
+                peerAddress,
+                messages: async () => [],
+                send: async (message) => {
+                  console.log('📤 Mock message sent:', message, 'to:', peerAddress)
+                  return { content: message, senderAddress: address, sent: new Date() }
+                },
+                streamMessages: () => ({
+                  on: () => {},
+                  close: () => {}
+                })
+              }
+            } catch (err) {
+              console.error('❌ Error creating mock conversation:', err)
+              throw err
             }
-          })
-        }
-      }
+          }
+        },
+        streamMessages: () => ({
+          on: () => {},
+          close: () => {}
+        }),
+        stream: () => ({
+          on: (event, callback) => {
+            console.log('📡 Mock conversation stream listening for:', event)
+          },
+          close: () => {
+            console.log('📡 Mock conversation stream closed')
+          }
+        })
+      };
 
       setClient(mockClient)
       console.log('✅ Mock XMTP client initialized')

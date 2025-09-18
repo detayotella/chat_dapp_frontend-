@@ -8,6 +8,11 @@ class PinataService {
     this.jwt = jwt
     this.baseUrl = 'https://uploads.pinata.cloud/v3'
     this.legacyBaseUrl = 'https://api.pinata.cloud'
+    
+    // Validate JWT token
+    if (!jwt || jwt === 'YOUR_REAL_PINATA_JWT_HERE' || jwt.includes('mock')) {
+      throw new Error('⚠️ Real Pinata JWT token required. Please update VITE_PINATA_JWT in your .env file with your actual Pinata API key from https://app.pinata.cloud/developers/api-keys')
+    }
   }
 
   /**
@@ -28,9 +33,13 @@ class PinataService {
       }
 
       if (metadata.keyvalues && Object.keys(metadata.keyvalues).length > 0) {
-        formData.append('keyvalues', JSON.stringify({
-          keyvalues: metadata.keyvalues
-        }))
+        // Ensure all keyvalues are strings and properly formatted
+        const stringifiedKeyValues = {}
+        for (const [key, value] of Object.entries(metadata.keyvalues)) {
+          stringifiedKeyValues[key] = String(value)
+        }
+        
+        formData.append('keyvalues', JSON.stringify(stringifiedKeyValues))
       }
 
       const response = await fetch(`${this.baseUrl}/files`, {
@@ -47,12 +56,23 @@ class PinataService {
       }
 
       const result = await response.json()
+      console.log('✅ Pinata upload successful:', result)
+      
+      // Extract the CID/hash from different possible response formats
+      const cid = result.data?.cid || result.cid || result.IpfsHash
+      if (!cid) {
+        console.error('❌ No CID found in Pinata response:', result)
+        throw new Error('No IPFS hash returned from Pinata')
+      }
+      
       return {
         success: true,
-        ipfsHash: result.data?.cid || result.cid,
-        pinSize: result.data?.size || result.size,
+        ipfsHash: cid,
+        pinSize: result.data?.size || result.size || 0,
         timestamp: result.data?.created_at || new Date().toISOString(),
-        url: `https://gateway.pinata.cloud/ipfs/${result.data?.cid || result.cid}`
+        url: `https://gateway.pinata.cloud/ipfs/${cid}`,
+        ipfsUrl: `https://ipfs.io/ipfs/${cid}`, // Alternative IPFS gateway
+        originalResponse: result
       }
     } catch (error) {
       console.error('Error uploading file to Pinata:', error)

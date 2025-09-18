@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
 import { formatDistanceToNow } from 'date-fns'
 import { useReadReceipts } from '../../hooks/useReadReceipts'
 import { useReactions } from '../../hooks/useReactions'
@@ -104,13 +103,26 @@ function DateDivider({ date }) {
   )
 }
 
-export default function MessageList({ messages = [], conversation, isLoading = false }) {
-  const { address } = useAccount()
-  const { readStatus, markMessagesAsRead } = useReadReceipts(conversation)
-  const { reactions, sendReaction, removeReaction } = useReactions(conversation)
-  const endOfMessagesRef = useRef(null)
+export default function MessageList({ messages, currentUserId, isLoading }) {
   const containerRef = useRef(null)
+  const endOfMessagesRef = useRef(null)
   const [wasAtBottom, setWasAtBottom] = useState(true)
+  
+  const { readStatus, markMessagesAsRead } = useReadReceipts()
+  const { reactions, sendReaction, removeReaction } = useReactions()
+
+  console.log('🔍 MessageList render:')
+  console.log('  - messages prop:', messages)
+  console.log('  - messages.length:', messages.length)
+  console.log('  - currentUserId:', currentUserId)
+  console.log('  - isLoading:', isLoading)
+
+  // Track when messages prop changes
+  useEffect(() => {
+    console.log('🔄 MessageList: messages prop changed!')
+    console.log('  - New messages:', messages)
+    console.log('  - New messages length:', messages.length)
+  }, [messages])
 
   // Check if user was at bottom before new message
   useEffect(() => {
@@ -129,14 +141,14 @@ export default function MessageList({ messages = [], conversation, isLoading = f
 
   // Mark messages as read when they become visible
   useEffect(() => {
-    if (!messages.length || !conversation) return
+    if (!messages.length) return
 
     const observer = new IntersectionObserver(
       (entries) => {
         const visibleMessages = entries
           .filter(entry => entry.isIntersecting)
           .map(entry => messages.find(m => m.id === entry.target.dataset.messageId))
-          .filter(message => message && message.senderAddress !== address)
+          .filter(message => message && message.sender !== currentUserId)
 
         if (visibleMessages.length) {
           markMessagesAsRead(visibleMessages)
@@ -154,7 +166,7 @@ export default function MessageList({ messages = [], conversation, isLoading = f
     return () => {
       messageElements.forEach(el => observer.unobserve(el))
     }
-  }, [messages, conversation, address, markMessagesAsRead])
+  }, [messages, currentUserId, markMessagesAsRead])
 
   if (isLoading) {
     return (
@@ -168,7 +180,18 @@ export default function MessageList({ messages = [], conversation, isLoading = f
 
   // Group messages by date
   const messagesByDate = messages.reduce((groups, message) => {
-    const date = new Date(message.sent).toLocaleDateString()
+    // Ensure we have a valid date
+    let messageDate;
+    if (message.sent) {
+      messageDate = new Date(message.sent);
+    } else if (message.timestamp) {
+      messageDate = new Date(message.timestamp);
+    } else {
+      messageDate = new Date(); // fallback to now
+    }
+    
+    const date = messageDate.toLocaleDateString()
+    
     if (!groups[date]) {
       groups[date] = []
     }
@@ -176,11 +199,17 @@ export default function MessageList({ messages = [], conversation, isLoading = f
     return groups
   }, {})
 
+  console.log('🔍 MessagesByDate result:')
+  console.log('  - messagesByDate:', messagesByDate)
+  console.log('  - Object.keys(messagesByDate):', Object.keys(messagesByDate))
+  console.log('  - Total date groups:', Object.keys(messagesByDate).length)
+
   return (
     <div 
       ref={containerRef}
       className="flex-1 overflow-y-auto p-4 scroll-smooth"
     >
+      
       {messages.length === 0 ? (
         <div className="h-full flex flex-col items-center justify-center text-center">
           <div className="text-gray-500 dark:text-gray-400">
@@ -195,21 +224,24 @@ export default function MessageList({ messages = [], conversation, isLoading = f
           {Object.entries(messagesByDate).map(([date, msgs]) => (
             <div key={date}>
               <DateDivider date={date} />
-              {msgs.map((message, index) => (
-                <div 
-                  key={`${message.id}-${index}`}
-                  data-message-id={message.id}
-                >
-                  <Message
-                    message={message}
-                    isFromMe={message.senderAddress === address}
-                    isRead={readStatus[message.id]}
-                    reactions={reactions}
-                    onReaction={sendReaction}
-                    onRemoveReaction={removeReaction}
-                  />
-                </div>
-              ))}
+              {msgs.map((message, index) => {
+                console.log('🎨 Rendering message:', message);
+                return (
+                  <div 
+                    key={`${message.id}-${index}`}
+                    data-message-id={message.id}
+                  >
+                    <Message
+                      message={message}
+                      isFromMe={message.sender === currentUserId}
+                      isRead={readStatus[message.id]}
+                      reactions={reactions}
+                      onReaction={sendReaction}
+                      onRemoveReaction={removeReaction}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ))}
           <div ref={endOfMessagesRef} />

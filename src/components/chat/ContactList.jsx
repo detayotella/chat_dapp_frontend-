@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useXMTP } from '../../contexts/XMTPContext'
+import { useChat } from '../../contexts/ChatContext'
 import { formatDistanceToNow } from 'date-fns'
 import { EllipsisVerticalIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
 export default function ContactList() {
-  const { conversations = [], isLoading } = useXMTP()
+  const { contacts = [], conversations = [], isLoading } = useChat()
   const { userId } = useParams()
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')

@@ -6,14 +6,24 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { config } from './config/wagmi'
-import { XMTPProvider } from './contexts/XMTPContext'
+import { ChatProvider } from './contexts/ChatContext'
 import { UserRegistrationProvider } from './contexts/UserRegistrationContext'
 import '@rainbow-me/rainbowkit/styles.css'
 import './index.css'
 
+// Global error handlers to catch unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  console.warn('🚨 Unhandled promise rejection:', event.reason)
+  // Prevent the browser from logging these errors to the console
+  event.preventDefault()
+})
+
+window.addEventListener('error', (event) => {
+  console.warn('🚨 Global error:', event.error)
+})
+
 const queryClient = new QueryClient()
 import MainLayout from './components/layout/MainLayout'
-import ChatLayout from './layouts/ChatLayout'
 import LandingPage from './pages/LandingPage'
 import RegisterPage from './pages/RegisterPage'
 import FireDomainRegistration from './pages/FireDomainRegistration'
@@ -42,15 +52,9 @@ const router = createBrowserRouter([
     path: '/chat',
     element: (
       <ProtectedRoute>
-        <ChatLayout />
+        <ChatPage />
       </ProtectedRoute>
     ),
-    children: [
-      {
-        path: ':userId?',
-        element: <ChatPage />,
-      },
-    ],
   },
 ])
 
@@ -60,9 +64,9 @@ createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <UserRegistrationProvider>
-            <XMTPProvider>
+            <ChatProvider>
               <RouterProvider router={router} />
-            </XMTPProvider>
+            </ChatProvider>
           </UserRegistrationProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

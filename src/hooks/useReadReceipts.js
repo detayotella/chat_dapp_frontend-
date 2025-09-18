@@ -1,50 +1,37 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useXMTP } from '../contexts/XMTPContext'
+import { useState, useCallback } from 'react'
+import { useChat } from '../contexts/ChatContext'
+import { useWriteContract } from 'wagmi'
+import FireChatABI from '../contracts/abi/FireChat.json'
 
-export function useReadReceipts(conversation) {
-  const { client } = useXMTP()
+export function useReadReceipts() {
+  const { userId } = useChat()
   const [readStatus, setReadStatus] = useState({})
+  const { writeContract } = useWriteContract()
 
-  // Send read receipt
+  // Send read receipt to contract
   const markAsRead = useCallback(async (messageId) => {
-    if (!conversation) return
+    if (!messageId || !userId) return
 
     try {
-      await conversation.send('/read', { 
-        ephemeral: true,
-        messageId
+      await writeContract({
+        address: import.meta.env.VITE_FIRE_CHAT_CONTRACT_ADDRESS,
+        abi: FireChatABI.abi,
+        functionName: 'markMessageAsRead',
+        args: [messageId]
       })
+
+      setReadStatus(prev => ({
+        ...prev,
+        [messageId]: true
+      }))
     } catch (error) {
-      console.error('Error sending read receipt:', error)
+      console.error('Error marking message as read:', error)
     }
-  }, [conversation])
+  }, [userId, writeContract])
 
-  // Handle receiving read receipts
-  useEffect(() => {
-    if (!conversation) return
-
-    const handleMessage = (message) => {
-      if (message.content === '/read' && message.senderAddress !== client?.address) {
-        const { messageId } = message
-        if (messageId) {
-          setReadStatus(prev => ({
-            ...prev,
-            [messageId]: true
-          }))
-        }
-      }
-    }
-
-    const stream = conversation.streamMessages(handleMessage)
-
-    return () => {
-      stream.unsubscribe()
-    }
-  }, [conversation, client?.address])
-
-  // Batch mark messages as read
+  // Mark multiple messages as read
   const markMessagesAsRead = useCallback(async (messages) => {
-    if (!messages?.length) return
+    if (!messages || messages.length === 0) return
 
     for (const message of messages) {
       await markAsRead(message.id)

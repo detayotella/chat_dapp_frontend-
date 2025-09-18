@@ -1,39 +1,44 @@
 import { useState, useEffect } from 'react'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
-import { useTypingIndicator } from '../../hooks/useTypingIndicator'
-import debounce from 'lodash/debounce'
 
-export default function MessageInput({ conversation, onSendMessage, isLoading }) {
-  const [message, setMessage] = useState('')
+export default function MessageInput({ 
+  value, 
+  onChange, 
+  onSend, 
+  placeholder = 'Type a message...', 
+  disabled = false 
+}) {
+  const [message, setMessage] = useState(value || '')
   const [isSending, setIsSending] = useState(false)
-  const { peerIsTyping, sendTypingIndicator } = useTypingIndicator(conversation)
+  const [selectedFile, setSelectedFile] = useState(null)
 
-  // Debounced typing indicator
-  const debouncedTypingIndicator = debounce(() => {
-    sendTypingIndicator()
-  }, 500)
-
+  // Sync with external value prop
   useEffect(() => {
-    return () => {
-      debouncedTypingIndicator.cancel()
-    }
-  }, [debouncedTypingIndicator])
+    setMessage(value || '')
+  }, [value])
 
   const handleChange = (e) => {
-    setMessage(e.target.value)
-    if (e.target.value.trim()) {
-      debouncedTypingIndicator()
-    }
+    const newValue = e.target.value
+    setMessage(newValue)
+    onChange && onChange(newValue)
+  }
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]
+    setSelectedFile(file)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!message.trim() || isLoading || isSending) return
+    if ((!message.trim() && !selectedFile) || disabled || isSending) return
 
     try {
       setIsSending(true)
-      await onSendMessage(message)
+      const attachments = selectedFile ? [selectedFile] : []
+      await onSend(message, attachments)
       setMessage('')
+      setSelectedFile(null)
+      onChange && onChange('')
     } catch (error) {
       console.error('Failed to send message:', error)
     } finally {
@@ -43,31 +48,44 @@ export default function MessageInput({ conversation, onSendMessage, isLoading })
 
   return (
     <div className="border-t dark:border-gray-800">
-      {peerIsTyping && (
-        <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-          <span className="inline-flex items-center">
-            <span className="mr-2">Typing</span>
-            <span className="flex space-x-1">
-              <span className="animate-bounce">.</span>
-              <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>.</span>
-              <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>.</span>
-            </span>
-          </span>
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="p-4">
         <div className="flex space-x-4">
-          <input
-            type="text"
-            value={message}
-            onChange={handleChange}
-            placeholder={isLoading ? 'Loading conversation...' : 'Type a message...'}
-            className="flex-1 rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 disabled:opacity-75"
-            disabled={isLoading || isSending}
-          />
+          <div className="flex-1 space-y-2">
+            <input
+              type="text"
+              value={message}
+              onChange={handleChange}
+              placeholder={disabled ? 'Loading...' : placeholder}
+              className="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 disabled:opacity-75"
+              disabled={disabled || isSending}
+            />
+            
+            {/* File input */}
+            <input
+              type="file"
+              onChange={handleFileSelect}
+              accept="image/*,video/*,.pdf,.doc,.docx"
+              className="text-sm text-gray-500 dark:text-gray-400"
+              disabled={disabled || isSending}
+            />
+            
+            {selectedFile && (
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Selected: {selectedFile.name}
+                <button 
+                  type="button"
+                  onClick={() => setSelectedFile(null)}
+                  className="ml-2 text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+          </div>
+          
           <button
             type="submit"
-            disabled={!message.trim() || isLoading || isSending}
+            disabled={(!message.trim() && !selectedFile) || disabled || isSending}
             className="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSending ? (

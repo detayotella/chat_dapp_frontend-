@@ -39,53 +39,55 @@ export default function Register() {
   }
 
   return (
-    <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-6">Complete Your Profile</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="Choose a username"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Profile Picture
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setAvatar(e.target.files[0])}
-            className="mt-1 block w-full"
-            required
-          />
-        </div>
-
-        {error && (
-          <div className="text-red-600 text-sm">
-            {error}
+    <div className="min-h-screen bg-gradient-to-br from-fire-orange-50 via-white to-fire-purple-50 flex items-center justify-center px-6 py-12">
+      <div className="card max-w-lg w-full">
+        <h2 className="text-3xl font-bold mb-6 text-fire-gray-900 text-center">Complete Your Profile</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-fire-gray-700 mb-3">
+              Username
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="input"
+              placeholder="Choose a username"
+              required
+            />
           </div>
-        )}
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-            isLoading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          {isLoading ? 'Registering...' : 'Complete Registration'}
-        </button>
-      </form>
+          <div>
+            <label className="block text-sm font-semibold text-fire-gray-700 mb-3">
+              Profile Picture
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setAvatar(e.target.files[0])}
+              className="input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-fire-orange-500 file:text-white hover:file:bg-fire-orange-600"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-lg p-4">
+              <p className="text-red-600 text-sm font-medium">
+                {error}
+              </p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isUploading || isRegistering}
+            className="btn-primary w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isUploading || isRegistering ? 'Registering...' : 'Complete Registration'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

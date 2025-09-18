@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
-import { useXMTP } from '../../contexts/XMTPContext'
+import { useChat } from '../../contexts/ChatContext'
 
 export default function UserSearch({ onStartChat }) {
   const [searchQuery, setSearchQuery] = useState('')
-  const { isLoading } = useXMTP()
+  const { isLoading } = useChat()
   
   const handleSubmit = async (e) => {
     e.preventDefault()

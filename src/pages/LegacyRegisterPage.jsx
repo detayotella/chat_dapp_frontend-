@@ -85,91 +85,95 @@ export default function LegacyRegisterPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-fire-orange-50 via-white to-fire-purple-50 flex flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">
+        <h2 className="mt-6 text-center text-3xl font-bold leading-9 tracking-tight text-fire-gray-900">
           Legacy Profile Registration
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-4 text-center text-fire-gray-600">
           Register with the legacy chat registry system
         </p>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Input */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
-              Username
-            </label>
-            <div className="mt-2">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-500 dark:bg-gray-800 sm:text-sm sm:leading-6"
-                placeholder="Enter your desired username"
-              />
-            </div>
-            {name && (
-              <p className={`mt-2 text-sm ${isAvailable ? 'text-green-600' : 'text-red-600'}`}>
-                {isAvailable ? 'Username is available!' : 'Username is not available'}
-              </p>
-            )}
-          </div>
-
-          {/* Image Upload */}
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
-              Profile Image
-            </label>
-            <div className="mt-2 flex flex-col items-center">
-              {previewUrl && (
-                <div className="mb-4">
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className="h-32 w-32 rounded-full object-cover"
-                  />
-                </div>
+        <div className="card">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name Input */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-semibold leading-6 text-fire-gray-700 mb-3">
+                Username
+              </label>
+              <div className="mt-2">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="input"
+                  placeholder="Enter your desired username"
+                />
+              </div>
+              {name && (
+                <p className={`mt-3 text-sm font-medium ${isAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                  {isAvailable ? '✅ Username is available!' : '❌ Username is not available'}
+                </p>
               )}
-              <input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="block w-full text-sm text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500"
-              />
             </div>
-          </div>
 
-          {error && (
-            <p className="text-sm text-red-600">
-              {error}
+            {/* Image Upload */}
+            <div>
+              <label htmlFor="image" className="block text-sm font-semibold leading-6 text-fire-gray-700 mb-3">
+              Profile Image
+              </label>
+              <div className="mt-3 flex flex-col items-center">
+                {previewUrl && (
+                  <div className="mb-4">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="h-32 w-32 rounded-full object-cover border-4 border-fire-orange-200 shadow-lg"
+                    />
+                  </div>
+                )}
+                <input
+                  id="image"
+                  name="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-fire-orange-500 file:text-white hover:file:bg-fire-orange-600"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-600 font-medium">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading || isRegistering || !isAvailable || !image}
+                className="btn-primary w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading || isRegistering ? 'Registering...' : 'Register Profile'}
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-fire-gray-600">
+              Prefer the new system?{' '}
+              <a href="/register/fire-domain" className="text-fire-orange-500 hover:text-fire-orange-600 underline font-medium">
+                Register a .fire domain instead
+              </a>
             </p>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading || isRegistering || !isAvailable || !image}
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400"
-            >
-              {isLoading || isRegistering ? 'Registering...' : 'Register'}
-            </button>
           </div>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Prefer the new system?{' '}
-            <a href="/register/fire-domain" className="text-indigo-600 hover:text-indigo-500 underline">
-              Register a .fire domain instead
-            </a>
-          </p>
         </div>
       </div>
     </div>

@@ -1,3 +1,187 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fire Chat Design System - Professional Color Palette */
+:root {
+  /* Primary Colors - Fire Theme */
+  --fire-50: #fff7ed;
+  --fire-100: #ffedd5;
+  --fire-200: #fed7aa;
+  --fire-300: #fdba74;
+  --fire-400: #fb923c;
+  --fire-500: #f97316;
+  --fire-600: #ea580c;
+  --fire-700: #c2410c;
+  --fire-800: #9a3412;
+  --fire-900: #7c2d12;
+  --fire-950: #431407;
+
+  /* Accent Colors - Purple for contrast */
+  --accent-50: #faf5ff;
+  --accent-100: #f3e8ff;
+  --accent-200: #e9d5ff;
+  --accent-300: #d8b4fe;
+  --accent-400: #c084fc;
+  --accent-500: #a855f7;
+  --accent-600: #9333ea;
+  --accent-700: #7c3aed;
+  --accent-800: #6b21a8;
+  --accent-900: #581c87;
+  --accent-950: #3b0764;
+
+  /* Neutral Grays - Modern UI */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-950: #030712;
+
+  /* Success/Error States */
+  --success-50: #ecfdf5;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --error-50: #fef2f2;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+
+  /* Semantic Colors */
+  --background: var(--gray-50);
+  --foreground: var(--gray-900);
+  --card: #ffffff;
+  --card-foreground: var(--gray-900);
+  --popover: #ffffff;
+  --popover-foreground: var(--gray-900);
+  --primary: var(--fire-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--accent-600);
+  --secondary-foreground: #ffffff;
+  --muted: var(--gray-100);
+  --muted-foreground: var(--gray-500);
+  --border: var(--gray-200);
+  --input: var(--gray-100);
+  --ring: var(--fire-500);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--gray-950);
+    --foreground: var(--gray-50);
+    --card: var(--gray-900);
+    --card-foreground: var(--gray-50);
+    --popover: var(--gray-900);
+    --popover-foreground: var(--gray-50);
+    --muted: var(--gray-800);
+    --muted-foreground: var(--gray-400);
+    --border: var(--gray-700);
+    --input: var(--gray-800);
+  }
+}
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  
+  body {
+    @apply bg-white text-gray-900;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+  
+  h1 { @apply text-4xl lg:text-5xl; }
+  h2 { @apply text-3xl lg:text-4xl; }
+  h3 { @apply text-2xl lg:text-3xl; }
+  h4 { @apply text-xl lg:text-2xl; }
+  h5 { @apply text-lg lg:text-xl; }
+  h6 { @apply text-base lg:text-lg; }
+}
+
+/* Component styles */
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-secondary {
+    @apply bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200;
+  }
+  
+  .btn-ghost {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100 font-medium py-2 px-4 rounded-lg transition-all duration-200;
+  }
+  
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-lg hover:border-gray-200 transition-all duration-200;
+  }
+  
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200;
+  }
+  
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-lg bg-white/70 border border-white/20;
+  }
+  
+  /* Fire gradient backgrounds */
+  .bg-fire-gradient {
+    @apply bg-gradient-to-br from-orange-400 via-red-500 to-pink-600;
+  }
+  
+  .bg-fire-gradient-subtle {
+    @apply bg-gradient-to-br from-orange-50 via-red-50 to-pink-50;
+  }
+  
+  /* Text gradients */
+  .text-fire-gradient {
+    @apply bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent;
+  }
+  
+  .text-accent-gradient {
+    @apply bg-gradient-to-r from-purple-500 to-indigo-600 bg-clip-text text-transparent;
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+  to { box-shadow: 0 0 30px rgba(249, 115, 22, 0.6); }
+}

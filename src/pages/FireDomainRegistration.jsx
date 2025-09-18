@@ -41,7 +41,7 @@ export default function FireDomainRegistration() {
     if (walletClient && publicClient) {
       const contract = {
         address: FIRE_DOMAIN_CONTRACT_ADDRESS,
-        abi: FireDomainABI
+        abi: FireDomainABI.abi
       }
 
       const pinataConfig = {
@@ -180,14 +180,14 @@ export default function FireDomainRegistration() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="min-h-screen bg-gradient-to-br from-fire-orange-50 via-white to-fire-purple-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           {/* Back Button */}
           <div className="mb-6">
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 hover:text-gray-700 transition-colors duration-200 shadow-sm"
+              className="btn-secondary"
             >
               <ArrowLeftIcon className="w-4 h-4 mr-2" />
               Back to Home
@@ -196,14 +196,14 @@ export default function FireDomainRegistration() {
           
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Register Your <span className="text-orange-500">.fire</span> Domain
+            <h1 className="text-4xl font-bold text-fire-gray-900 mb-4">
+              Register Your <span className="bg-gradient-to-r from-fire-orange-500 to-fire-red-500 bg-clip-text text-transparent">.fire</span> Domain
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p className="text-fire-gray-600 text-lg">
               Create your unique blockchain identity with a custom .fire domain
             </p>
             {registrationFee && (
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-fire-gray-500 mt-2">
                 Registration fee: {formatEther(registrationFee)} ETH per year
               </p>
             )}
@@ -211,18 +211,18 @@ export default function FireDomainRegistration() {
 
           {/* Success Message */}
           {success && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-              <h3 className="text-green-800 font-semibold mb-2">
+            <div className="card bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 mb-6">
+              <h3 className="text-green-800 font-semibold mb-2 text-lg">
                 🎉 Domain Registered Successfully!
               </h3>
-              <div className="text-green-700 space-y-1">
+              <div className="text-green-700 space-y-2">
                 <p><strong>Domain:</strong> {success.fullDomain}</p>
                 <p><strong>Token ID:</strong> {success.tokenId}</p>
                 <p><strong>Expires:</strong> {new Date(success.expiresAt).toLocaleDateString()}</p>
                 <div className="mt-4 flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => navigate('/chat')}
-                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200"
+                    className="btn-primary"
                   >
                     🚀 Start Chatting Now
                   </button>
@@ -231,7 +231,7 @@ export default function FireDomainRegistration() {
                       href={success.metadataUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-green-600 hover:text-green-800 underline"
+                      className="text-green-600 hover:text-green-800 underline font-medium"
                     >
                       View Metadata
                     </a>
@@ -239,7 +239,7 @@ export default function FireDomainRegistration() {
                       href={success.imageUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-green-600 hover:text-green-800 underline"
+                      className="text-green-600 hover:text-green-800 underline font-medium"
                     >
                       View Image
                     </a>
@@ -250,11 +250,11 @@ export default function FireDomainRegistration() {
           )}
 
           {/* Registration Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="card">
             <form onSubmit={handleRegister} className="space-y-6">
               {/* Domain Name Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-fire-gray-700 mb-3">
                   Domain Name
                 </label>
                 <div className="relative">
@@ -263,27 +263,27 @@ export default function FireDomainRegistration() {
                     value={domainName}
                     onChange={(e) => setDomainName(e.target.value.toLowerCase())}
                     placeholder="Enter domain name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="input pr-16"
                     disabled={isRegistering}
                   />
-                  <div className="absolute right-3 top-3 text-gray-500 font-medium">
+                  <div className="absolute right-4 top-3 text-fire-gray-500 font-semibold">
                     .fire
                   </div>
                 </div>
                 
                 {/* Domain Status */}
                 {domainName && (
-                  <div className="mt-2">
+                  <div className="mt-3">
                     {isChecking ? (
-                      <p className="text-gray-500 text-sm">Checking availability...</p>
+                      <p className="text-fire-gray-500 text-sm">Checking availability...</p>
                     ) : isValidDomainName(domainName) ? (
                       isAvailable === true ? (
-                        <p className="text-green-600 text-sm">✅ Domain is available!</p>
+                        <p className="text-green-600 text-sm font-medium">✅ Domain is available!</p>
                       ) : isAvailable === false ? (
-                        <p className="text-red-600 text-sm">❌ Domain is not available</p>
+                        <p className="text-red-600 text-sm font-medium">❌ Domain is not available</p>
                       ) : null
                     ) : (
-                      <p className="text-red-600 text-sm">
+                      <p className="text-red-600 text-sm font-medium">
                         Invalid domain name (3-32 characters, alphanumeric and hyphens only)
                       </p>
                     )}
@@ -293,13 +293,13 @@ export default function FireDomainRegistration() {
 
               {/* Duration Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-fire-gray-700 mb-3">
                   Registration Duration
                 </label>
                 <select
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="input"
                   disabled={isRegistering}
                 >
                   <option value={1}>1 Year</option>
@@ -309,7 +309,7 @@ export default function FireDomainRegistration() {
                   <option value={10}>10 Years</option>
                 </select>
                 {registrationFee && (
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-fire-gray-600 mt-2 font-medium">
                     Total cost: {formatEther(registrationFee * BigInt(duration))} ETH
                   </p>
                 )}
@@ -317,14 +317,14 @@ export default function FireDomainRegistration() {
 
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-fire-gray-700 mb-3">
                   Domain Image
                 </label>
                 
                 <div className="space-y-4">
                   {/* Image Option Toggle */}
-                  <div className="flex space-x-4">
-                    <label className="flex items-center">
+                  <div className="flex space-x-6">
+                    <label className="flex items-center cursor-pointer">
                       <input
                         type="radio"
                         checked={useDefaultImage}
@@ -333,20 +333,20 @@ export default function FireDomainRegistration() {
                           setImageFile(null)
                           setPreview(null)
                         }}
-                        className="mr-2"
+                        className="mr-3 w-4 h-4 text-fire-orange-500 border-2 border-fire-gray-300 focus:ring-fire-orange-500"
                         disabled={isRegistering}
                       />
-                      Generate Default Image
+                      <span className="text-fire-gray-700 font-medium">Generate Default Image</span>
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center cursor-pointer">
                       <input
                         type="radio"
                         checked={!useDefaultImage}
                         onChange={() => setUseDefaultImage(false)}
-                        className="mr-2"
+                        className="mr-3 w-4 h-4 text-fire-orange-500 border-2 border-fire-gray-300 focus:ring-fire-orange-500"
                         disabled={isRegistering}
                       />
-                      Upload Custom Image
+                      <span className="text-fire-gray-700 font-medium">Upload Custom Image</span>
                     </label>
                   </div>
 
@@ -357,10 +357,10 @@ export default function FireDomainRegistration() {
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        className="input"
                         disabled={isRegistering}
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-fire-gray-500 mt-2">
                         PNG, JPG, GIF up to 5MB. Recommended: 400x400px
                       </p>
                     </div>
@@ -369,11 +369,11 @@ export default function FireDomainRegistration() {
                   {/* Image Preview */}
                   {preview && (
                     <div className="mt-4">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                      <p className="text-sm font-semibold text-fire-gray-700 mb-3">Preview:</p>
                       <img
                         src={preview}
                         alt="Domain image preview"
-                        className="w-32 h-32 object-cover rounded-lg border"
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-fire-gray-200 shadow-sm"
                       />
                     </div>
                   )}
@@ -382,8 +382,8 @@ export default function FireDomainRegistration() {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-600">{error}</p>
+                <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-lg p-4">
+                  <p className="text-red-600 font-medium">{error}</p>
                 </div>
               )}
 
@@ -398,7 +398,7 @@ export default function FireDomainRegistration() {
                   isRegistering ||
                   isChecking
                 }
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
+                className="btn-primary w-full py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {!isConnected ? (
                   'Connect Wallet to Register'
@@ -416,7 +416,7 @@ export default function FireDomainRegistration() {
                 <button
                   type="button"
                   onClick={openConnectModal}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  className="btn-secondary w-full py-4 text-lg font-semibold"
                 >
                   Connect Wallet
                 </button>
@@ -425,27 +425,39 @@ export default function FireDomainRegistration() {
           </div>
 
           {/* Info Section */}
-          <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              About .fire Domains
+          <div className="mt-8 card">
+            <h2 className="text-xl font-bold text-fire-gray-900 mb-6">
+              About <span className="bg-gradient-to-r from-fire-orange-500 to-fire-red-500 bg-clip-text text-transparent">.fire</span> Domains
             </h2>
-            <div className="space-y-3 text-gray-600">
-              <p>
-                <strong>Unique Identity:</strong> Your .fire domain serves as your unique 
-                blockchain identity across the decentralized web.
-              </p>
-              <p>
-                <strong>💎 NFT Ownership:</strong> Each domain is an NFT that you fully own 
-                and can transfer or sell.
-              </p>
-              <p>
-                <strong>🌐 Web3 Integration:</strong> Use your domain for wallet addresses, 
-                dApp usernames, and more.
-              </p>
-              <p>
-                <strong>📱 Chat Integration:</strong> Seamlessly integrates with XMTP for 
-                decentralized messaging.
-              </p>
+            <div className="space-y-4 text-fire-gray-600">
+              <div className="flex items-start space-x-3">
+                <span className="text-fire-orange-500 text-lg">🔥</span>
+                <p>
+                  <strong className="text-fire-gray-700">Unique Identity:</strong> Your .fire domain serves as your unique 
+                  blockchain identity across the decentralized web.
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <span className="text-fire-orange-500 text-lg">💎</span>
+                <p>
+                  <strong className="text-fire-gray-700">NFT Ownership:</strong> Each domain is an NFT that you fully own 
+                  and can transfer or sell.
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <span className="text-fire-orange-500 text-lg">🌐</span>
+                <p>
+                  <strong className="text-fire-gray-700">Web3 Integration:</strong> Use your domain for wallet addresses, 
+                  dApp usernames, and more.
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <span className="text-fire-orange-500 text-lg">📱</span>
+                <p>
+                  <strong className="text-fire-gray-700">Chat Integration:</strong> Seamlessly integrates with XMTP for 
+                  decentralized messaging.
+                </p>
+              </div>
             </div>
           </div>
         </div>
